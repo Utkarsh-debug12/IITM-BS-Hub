@@ -3,57 +3,83 @@
 
 ## Overview
 
-Week 1 introduces running Linux safely in a virtual machine, using the command line, navigating the Linux filesystem, and managing files and permissions. The lecture material is dated December 22, 2021; specific OS and hypervisor versions may have changed since then.  
+Week 1 covers setting up Linux in a virtual machine, using the terminal, navigating the Linux filesystem, inspecting system and file information, and managing files and permissions. The three lectures are dated December 22, 2021, so software versions and interface labels may have changed since then.
 
 ## 1. Run Linux in a virtual machine
 
-A **virtual machine (VM)** lets you try Linux as a guest operating system without replacing your computer’s current OS or setting up dual boot. A **hypervisor** (or virtual machine monitor) creates and runs VMs by allocating host resources such as memory and processing.
+### Why use a VM?
+
+A **virtual machine (VM)** runs a guest operating system—such as Linux—inside the host computer’s existing operating system. It lets you try Linux without replacing your current OS or setting up a dual-boot system.
+
+A **hypervisor** (also called a virtual machine monitor or VMM) creates and runs VMs. It allocates some of the host computer’s resources, such as memory, processing capacity, and disk space, to each guest VM.
 
 ### What you need
 
-- An operating-system `.iso` installer image (the lecture recommends Ubuntu 20.04).
-- A hypervisor such as VirtualBox or VMware Workstation Player; Windows Subsystem for Linux is another option mentioned in the lecture.
-- At least 20 GB of free disk space for the VM; the lecture recommends 8 GB or more of host RAM.
+- An operating-system installer image, usually an `.iso` file. The lecture recommends Ubuntu 20.04; choose a currently supported release when setting up a new VM.
+- A hypervisor such as Oracle VirtualBox or VMware Workstation Player. Windows Subsystem for Linux (WSL) is another way to use Linux tools on Windows, though it is not the same as a traditional desktop VM.
+- Disk space for the VM: the lecture recommends at least 20 GB.
+- Host memory: the lecture recommends 8 GB or more of RAM overall. Allocate only a portion to the VM so the host remains usable.
 
-### Basic VirtualBox workflow
+### VirtualBox installation outline
 
-1. Download the Ubuntu desktop ISO and install VirtualBox.
-2. Create a new VM; choose a name, Linux type, and Ubuntu version.
-3. Allocate memory and storage while leaving enough resources for the host.
-4. Open the VM’s **Settings → Storage**, select the empty optical drive, and attach the ISO.
-5. Start the VM and follow the installer prompts.
+1. Download the Ubuntu desktop `.iso` from ubuntu.com/download/desktop.
+2. Install VirtualBox (or another hypervisor).
+3. Create a new VM. Give it a name and choose the appropriate OS type and version.
+4. Allocate memory and virtual disk space. Keep enough resources available for the host computer.
+5. Open the VM’s settings and go to **Storage**. Select the empty optical drive, choose the virtual optical disk option, and attach the downloaded `.iso`.
+6. Start the VM and follow the operating-system installer prompts.
+7. After installation, restart the VM if prompted. The VM should boot into the installed guest OS.
 
-## 2. Command-line essentials
+The lecture’s screenshots use older VirtualBox and Ubuntu versions; current menus may look different.
 
-A shell command usually consists of a command followed by optional options (flags) and arguments. For example, in `ls -a`, `ls` is the command and `-a` is an option.
+## 2. Command-line environment
 
-| Goal | Command / shortcut |
+### Why use the command line?
+
+The command line provides direct access to system tools. Commands can be combined into scripts, which makes repeated tasks easier to automate. A command usually has this general form:
+
+```
+command [options] [arguments]
+```
+
+- **Command**: the program to run, such as `ls`.
+- **Option/flag**: changes how the command behaves, such as `-a`.
+- **Argument**: the item the command acts on, such as a file or path.
+
+For example, in `ls -a`, `ls` is the command and `-a` is an option. Angle-bracket text in examples—such as `<file-name>`—is a placeholder; replace it with a real name and do not type the brackets.
+
+### Terminal basics
+
+| Goal | Command or shortcut |
 | --- | --- |
-| Clear the terminal | `clear` or `Ctrl + L` |
-| Show the current directory | `pwd` |
-| List files and folders | `ls` |
-| Include hidden entries | `ls -a` |
+| Clear the terminal display | `clear` or `Ctrl + L` |
+| Print the current directory | `pwd` |
+| List directory entries | `ls` |
+| Show hidden entries | `ls -a` |
 | Show a detailed listing | `ls -l` |
-| Combine listing options | `ls -al` |
-| Show running processes | `ps` |
-| Show system/kernel name | `uname` |
-| Open a command manual | `man <command>` (example: `man ls`) |
+| Show hidden entries in detailed form | `ls -al` |
+| Display running processes | `ps` |
+| Print system/kernel information | `uname` |
+| Open a command’s manual | `man <command>` (for example, `man ls`) |
 | Exit the shell | `exit` or `Ctrl + D` |
 
-By default, a new terminal typically starts in the current user’s home directory. Hidden names generally begin with a dot, so `ls -a` reveals them.
+A newly opened terminal commonly starts in the current user’s home directory. Names beginning with a dot, such as `.bashrc`, are hidden in ordinary `ls` output; `ls -a` includes them. Options can often be combined, as in `ls -al`.
 
-## 3. Navigate the filesystem
+## 3. Linux filesystem and paths
 
-Linux organizes files as a directory tree rooted at `/`.
+Linux arranges files and directories in a tree that starts at the filesystem root, `/`. The slash is also the separator between directory names in a path.
 
-- `/` — filesystem root; also separates directory names in a path.
+- `/` — filesystem root.
 - `.` — current directory.
 - `..` — parent directory.
-- **Absolute path** — starts at `/`; **relative path** — starts from the current directory.
+- **Absolute path** — begins at `/`, for example `/home/utkarsh/Documents`.
+- **Relative path** — begins from the current directory, for example `Documents/notes.txt`.
+
+Use `cd` (“change directory”) to move through the tree:
 
 ```bash
 cd                 # go to your home directory
-cd <folder-name>   # enter a child directory
+cd Documents       # enter a child directory named Documents
 cd ..              # go to the parent directory
 cd /               # go to the filesystem root
 cd -               # return to the previous directory
@@ -61,80 +87,184 @@ cd -               # return to the previous directory
 
 ### Common top-level directories
 
-- `/bin` — essential command binaries.
-- `/boot` — bootloader and boot-related files.
-- `/dev` — device files.
-- `/etc` — system configuration.
-- `/home` — users’ home directories.
-- `/lib` — essential shared libraries and kernel modules.
-- `/media` — mount points for removable media.
-- `/mnt` — mount points, often used temporarily.
-- `/opt` — add-on application software.
-- `/run` — runtime data for processes.
-- `/sbin` — essential system binaries.
-- `/srv` — data for services.
-- `/tmp` — temporary files.
-- `/usr` — much of the user-space software hierarchy, including `/usr/bin`, `/usr/lib`, `/usr/local`, `/usr/share`, `/usr/include`, and `/usr/src`.
-- `/var` — variable data, including logs (`/var/log`), caches (`/var/cache`), state (`/var/lib`), and temporary data (`/var/tmp`).
+| Directory | Typical purpose |
+| --- | --- |
+| `/bin` | Essential command binaries. On many modern distributions, this may be linked into `/usr/bin`. |
+| `/boot` | Bootloader and other boot-related files. |
+| `/dev` | Device files representing devices and system interfaces. |
+| `/etc` | System-wide configuration files. |
+| `/home` | Home directories for regular users. |
+| `/lib` | Essential shared libraries and kernel modules; often integrated with `/usr/lib` on modern systems. |
+| `/media` | Common mount points for removable media. |
+| `/mnt` | A mount point often used for temporary mounts. |
+| `/opt` | Optional or add-on application software. |
+| `/run` | Runtime data for processes since the current boot. |
+| `/sbin` | Essential system-administration binaries; often integrated with `/usr/sbin` on modern systems. |
+| `/srv` | Data used by services hosted by the system. |
+| `/tmp` | Temporary files; contents may be removed automatically. |
+| `/usr` | A major hierarchy for user-space programs, libraries, and shared data. |
+| `/var` | Variable data that changes during system operation, including logs and caches. |
 
-## 4. Useful system and file commands
+Important parts of the `/usr` hierarchy:
+
+- `/usr/bin` — user commands and applications.
+- `/usr/lib` — libraries used by programs.
+- `/usr/local` — software and files installed locally by an administrator.
+- `/usr/sbin` — system-administration programs.
+- `/usr/share` — architecture-independent shared data, such as documentation.
+- `/usr/include` — header files used when compiling C programs.
+- `/usr/src` — source code, often including kernel source packages.
+
+Important parts of the `/var` hierarchy:
+
+- `/var/cache` — application cache data.
+- `/var/lib` — variable state data maintained by applications and services.
+- `/var/local` — variable data for locally installed software under `/usr/local`.
+- `/var/lock` — lock files or lock-related data; implementation may vary by distribution.
+- `/var/log` — system and application logs.
+- `/var/run` — runtime data; commonly linked to `/run` on modern systems.
+- `/var/tmp` — temporary files that are generally preserved longer than files in `/tmp`, including across reboots.
+
+## 4. Everyday system and inspection commands
 
 | Command | What it does |
 | --- | --- |
-| `date` / `date -R` | Show date and time; `-R` uses an RFC-style date format. |
-| `cal` | Display a calendar. |
-| `free -h` | Show memory and swap usage in human-readable units. |
-| `groups` | List the groups the current user belongs to. |
-| `whoami` | Print the current username. |
-| `file <name>` | Identify a file’s type. |
-| `less <file>` | Read a text file page by page. |
-| `mkdir <name>` | Create a directory. |
-| `touch <name>` | Create an empty file if it does not exist, or update its timestamp. |
-| `cp <source> <destination>` | Copy a file. |
-| `mv <source> <destination>` | Move or rename a file. |
-| `rm <file>` | Remove a file. |
+| `date` | Prints the current date and time. |
+| `date -R` | Prints the date in an RFC-style format. |
+| `cal` | Displays a calendar, typically for the current month. |
+| `free` | Shows memory and swap usage. |
+| `free -h` | Shows memory and swap values in human-readable units. |
+| `groups` | Lists the groups the current user belongs to. |
+| `whoami` | Prints the current username. |
+| `uname` | Prints basic system or kernel information. |
+| `ps` | Lists processes associated with the current session by default. |
+| `file <name>` | Identifies the type or format of a file. |
+| `less <file>` | Reads a text file one screen at a time. |
 
-Quote filenames that contain spaces, for example: `mv "draft notes.txt" "final notes.txt"`.
+Use `man <command>` to read a command’s manual, for example `man chmod` or `man ls`. In `less`, use the arrow keys or Page Up/Page Down to move; press `q` to quit.
 
-> **Caution:** `rm` normally deletes without asking for confirmation. Check the target carefully; use `rm -i <file>` for an interactive prompt.
-> 
+## 5. Read detailed directory listings
 
-An alias can shorten a frequently used command:
+`ls -l` displays a long listing. A typical line contains:
+
+1. **File type and permissions**, such as `drwxr-xr-x`.
+2. **Link count**.
+3. **Owner**.
+4. **Group**.
+5. **Size** (usually bytes for ordinary files).
+6. **Last-modified date/time**.
+7. **Name**.
+
+The first character indicates the object type:
+
+| Character | Type |
+| --- | --- |
+| `-` | Regular file |
+| `d` | Directory |
+| `l` | Symbolic link |
+| `c` | Character device |
+| `b` | Block device |
+| `s` | Socket |
+| `p` | Named pipe (FIFO) |
+
+An **inode** is a filesystem record containing metadata about a file or directory and information used to locate its data. A directory maps names to filesystem objects; the inode is not the filename itself.
+
+## 6. Permissions
+
+A permission string has a type character followed by three groups of permissions:
+
+```
+-rwxr-xr--
+  owner group others
+```
+
+Each group can have:
+
+- `r` — read.
+- `w` — write.
+- `x` — execute. For a directory, `x` allows traversal/search through it.
+- `-` — the permission is not granted.
+
+The groups apply to the file’s **owner**, its **group**, and **others** (everyone else), in that order. For directories, read generally allows listing names, write allows changing directory entries, and execute allows accessing entries when the path is known.
+
+### Symbolic `chmod`
+
+The general form is:
+
+```
+chmod <who><operator><permissions> <file-or-directory>
+```
+
+- `u` — owner/user; `g` — group; `o` — others; `a` — all three classes.
+- `+` adds permission; `-` removes permission; `=` sets the permissions for that class exactly.
+- `r`, `w`, and `x` represent read, write, and execute.
+
+Examples:
+
+```bash
+chmod g-w project       # remove group write permission
+chmod g-x project       # remove group execute permission
+chmod g+w project       # add group write permission
+chmod u+x script.sh     # add execute permission for the owner
+```
+
+### Numeric `chmod`
+
+Numeric permissions use the values `r = 4`, `w = 2`, and `x = 1`. Add the values for each class—owner, group, others—to form a three-digit mode.
+
+| Value | Permissions |
+| --- | --- |
+| `7` | `rwx` (4 + 2 + 1) |
+| `6` | `rw-` (4 + 2) |
+| `5` | `r-x` (4 + 1) |
+| `4` | `r--` |
+| `1` | `--x` |
+
+Examples:
+
+- `chmod 700 item` gives the owner `rwx` and gives the group and others no permissions.
+- `chmod 755 item` gives the owner `rwx` and gives the group and others `r-x`.
+
+Use permission changes carefully, especially on shared or system files. Practice on a test file or directory.
+
+## 7. Create, copy, move, rename, and remove files
+
+| Command | Purpose | Example |
+| --- | --- | --- |
+| `mkdir <name>` | Create a directory. | `mkdir linux-practice` |
+| `touch <name>` | Create an empty file if it does not exist; otherwise update its timestamp. | `touch notes.txt` |
+| `cp <source> <destination>` | Copy a file to another name or path. | `cp notes.txt notes-copy.txt` |
+| `mv <source> <destination>` | Move or rename a file. | `mv notes.txt archive/notes.txt` or `mv draft.txt final.txt` |
+| `rm <name>` | Remove a file. | `rm old-notes.txt` |
+
+If a filename contains spaces, quote it so the shell treats it as one argument:
+
+```bash
+touch "first note.txt"
+mv "draft notes.txt" "final notes.txt"
+```
+
+**Important:** `rm` normally removes the target without asking for confirmation. Use `rm -i <file>` to request an interactive confirmation, and check the path carefully before removing anything.
+
+### Aliases
+
+An alias assigns a short name to a longer command. For example:
 
 ```bash
 alias ll="ls -altrhF"
 ```
 
-## 5. Read `ls -l` output and understand permissions
+This makes `ll` run `ls` with the listed options in the current shell session. To make an alias available in future shell sessions, add it to the appropriate shell startup file, such as `~/.bashrc`, then reload that file or open a new terminal.
 
-A long listing includes the file type and permissions, link count, owner, group, size, modification time, and name. The first character indicates the type:
+## 8. Practice checklist
 
-- `-` regular file; `d` directory; `l` symbolic link.
-- `c` character device; `b` block device; `s` socket; `p` named pipe.
-
-An **inode** is filesystem metadata associated with an object. `ls -l <name>` displays a permissions string such as `drwxr-xr-x`: the first character is the type, followed by permissions for **owner**, **group**, and **others**. Each group of three uses `r` (read), `w` (write), and `x` (execute).
-
-### Change permissions symbolically
-
-```bash
-chmod g-w <name>   # remove group write permission
-chmod g-x <name>   # remove group execute permission
-chmod g+w <name>   # add group write permission
-```
-
-In symbolic mode, `u` means owner/user, `g` group, and `o` others; `+` adds and `-` removes permissions. For example, `chmod u+x script.sh` adds execute permission for the owner.
-
-### Change permissions numerically
-
-The values are `r = 4`, `w = 2`, and `x = 1`; add them for each class (owner, group, others). For example, `chmod 700 <name>` gives the owner `rwx` and gives group and others no permissions. `755` means owner `rwx`, group `r-x`, and others `r-x`.
-
-## Quick practice
-
-1. Run `pwd` and `ls -al` to inspect your current location.
+1. Run `pwd` and `ls -al` to inspect your current location and its contents.
 2. Create a practice directory with `mkdir linux-practice`, then enter it with `cd linux-practice`.
-3. Create a file using `touch "first note.txt"`; inspect it with `ls -l` and `file "first note.txt"`.
-4. Try `cd ..`, then `cd -`, and use `man chmod` to explore the manual.
-5. Practice permission changes only on your test file or directory.
+3. Create a file with `touch "first note.txt"`; inspect it using `ls -l` and `file "first note.txt"`.
+4. Try `cd ..`, `cd -`, and `cd /`; use `pwd` to confirm where you are.
+5. Copy and rename the practice file with `cp` and `mv`.
+6. Try permission changes only on the practice file or directory, then inspect the result with `ls -l`.
+7. Use `man chmod` or `man ls` to look up options. Remove practice files only after checking the target.
 
 ## Lecture links
 
