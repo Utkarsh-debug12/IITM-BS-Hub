@@ -82,47 +82,6 @@ Everything is written in **Markdown (`.md`)**, so you can read it on GitHub, in 
 
 ---
 
-## 🗂 Repository Structure
-
-Each course lives in its own top-level folder, using the same layout everywhere:
-
-```
-IITM-BS-Hub/
-│
-├── System-Commands/
-│   ├── Notes/
-│   ├── Weekly-Assignments/
-│   └── Resources/
-│
-├── Programming-in-Python/
-│   ├── Notes/
-│   │   ├── Week-01-Introduction.md
-│   │   └── ...
-│   ├── Weekly-Assignments/
-│   │   ├── Week-01-GA.md
-│   │   └── ...
-│   ├── GrPAs/
-│   │   └── Week-01/
-│   │       ├── GrPA-1.md
-│   │       └── solutions/
-│   │           ├── python/
-│   │           └── java/
-│   └── Resources/
-│
-├── Database-Management-Systems/
-├── Machine-Learning-Foundations/
-├── ... (one folder per course)
-│
-├── Common-Resources/
-│   ├── Cheat-Sheets/
-│   ├── Previous-Year-Papers/
-│   └── Useful-Links.md
-│
-├── CONTRIBUTING.md
-├── LICENSE
-└── README.md
-```
-
 
 ---
 
