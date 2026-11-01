@@ -178,5 +178,5 @@ The `*` wildcard is a **filename glob**: the shell expands it to matching names 
 ## Lecture links
 
 - Simple Commands in Linux — 2 [[1]](https://youtu.be/lpe6AKk5GIk)
-- Shell Variables [[2]](https://youtu.be/pPRge8Yxbso)
+- Shell Variables   [[2]](https://youtu.be/pPRge8Yxbso)
 - Linux Process Management [[3]](https://youtu.be/2aThmDRvSWU)
